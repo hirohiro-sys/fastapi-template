@@ -1,8 +1,35 @@
 services:
+  # MySQLデータベースサービス
+  db:
+    image: mysql:8.0 # MySQL 8.0イメージを使用
+    command: > #MySQLサーバーの起動コマンドオプション
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-character-set-client-handshake
+    environment:
+      MYSQL_DATABASE: main # データベース名を設定
+      MYSQL_USER: user # ユーザー名を設定
+      MYSQL_PASSWORD: pass # パスワードを設定
+      MYSQL_ROOT_PASSWORD: root # rootユーザーのパスワードを設定
+    volumes:
+      # ホストの./app/db/initディレクトリをコンテナの/docker-entrypoint-initdb.dにマウント
+      # コンテナ初回起動時にinit.sqlが自動実行される
+      - ./app/db/init:/docker-entrypoint-initdb.d
+  
   # FastAPIアプリケーションサービス
   api:
-    build: . # カレントディレクトリのDockerfileを使用してイメージをビルド
+    build: . # Dockerfileを参照してビルド
     ports:
-      - "8000:8000" # ホストの8000ポートをコンテナの8000ポートにマッピング
+      - "8000:8000" # ホストの8000番ポートをコンテナの8000番ポートにマッピング
     volumes:
-      - .:/src # ホストのカレントディレクトリをコンテナの/srcにマウント（ホットリロード有効）
+      - .:/src # ホストのソースコードをコンテナにマウント（ホットリロード有効）
+    environment:
+      # FastAPIアプリケーションがデータベースに接続するためのURL
+      DATABASE_URL: mysql+aiomysql://user:pass@db:3306/main?charset=utf8mb4
+      # Python環境をUTF-8モードに固定し、文字コード関連の問題を防止
+      PYTHONUTF8: 1
+      PYTHONIOENCODING: utf-8
+      # 【重要】Pythonの出力をバッファリングせず即座に表示させる設定
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      - db # dbサービスが起動してからapiサービスを起動

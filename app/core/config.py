@@ -1,29 +1,18 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
+# アプリケーション全体の設定を管理するPydanticモデル
 class Settings(BaseSettings):
-    app_name: str = "fastapi-guide-tutorial"
-    app_env: str = "development"
-    app_debug: bool = True
+    # データベース接続URLを型定義（必須項目）
+    # 値を直接代入せず、.envまたは環境変数からの読み込みを強制
+    # これにより、設定漏れがあった場合にPydanticがエラーを発生させ、起動時に検知可能
+    DATABASE_URL: str
 
-    database_url: str = "sqlite:///./app.db"
-
-    api_v1_prefix: str = "/api/v1"
-
+    # Pydantic Settingsのモデル設定
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
+        # プロジェクトルートの.envファイルを自動的に読み込む
+        env_file=".env"
     )
 
-
-@lru_cache
-def get_settings() -> Settings:
-    # lru_cache でプロセス内シングルトン化し、.env の再読込コストを避ける
-    return Settings()
-
-
-settings = get_settings()
+# Settingsクラスのインスタンスを作成（シングルトンパターン）
+# アプリケーション全体でこのインスタンスを通じて設定にアクセス
+settings = Settings()
