@@ -1,14 +1,16 @@
-# FastAPI with Docker
+# FastAPI(Docker)の環境テンプレート
 
 
 ## Quick Start
 
-Docker がインストールされた環境で、以下の手順を実行してください。
 
 ### 1. 起動
-ターミナルで本ディレクトリに移動し、コマンドを実行します。
+Docker がインストールされた環境で、以下の手順を実行してください。
+
 ```bash
-docker compose up
+git clone https://github.com/hirohiro-sys/fastapi-template.git
+cd fastapi-guide-tutorial
+docker compose up --build
 ```
 
 ### 2. 動作確認
