@@ -3,5 +3,12 @@ uvicorn[standard]
 mangum            # AWS Lambda接続用アダプター（ASGI <-> AWS Lambdaプロキシ）
 sqlalchemy        # データベース操作のORM（非同期対応）
 aiomysql          # MySQLと非同期で通信するためのドライバー
+pymysql==1.1.1    # aiomysql/SQLAlchemyのpool_pre_ping互換性のためバージョン固定（1.2.0+でping()のデフォルト値変更によりTypeError発生）
 pydantic-settings # 環境変数を型安全に管理するためのライブラリ
 cryptography      # 【重要】MySQL 8.0の高度な認証 (caching_sha2_password) に必須、パスワードハッシュ化にも使用
+
+# Auth
+passlib[bcrypt]    # パスワードを安全にハッシュ化 (暗号化) するため
+bcrypt==4.0.1      # 【重要】passlibとの互換性を保つためバージョンを固定
+python-jose[cryptography] # JWTトークンの生成と検証のため
+python-multipart # ログインフォームからのデータ受け取りに必要
